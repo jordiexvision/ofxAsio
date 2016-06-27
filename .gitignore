@@ -27,6 +27,8 @@ ipch/
 *.pdb
 *.idb
 *.pch
+*.VC.db
+*.VC.opendb
 Debug/
 Release/
 
