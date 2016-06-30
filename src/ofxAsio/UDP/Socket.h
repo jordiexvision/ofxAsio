@@ -15,6 +15,7 @@ namespace ofxAsio {
 
 			Socket();
 			Socket(int port);
+			Socket(string ipAddress, int port);
 			~Socket();
 
 			shared_ptr<DataGram> receive(size_t bufferSize = 9216);
@@ -23,6 +24,8 @@ namespace ofxAsio {
 			void asyncReceiveAll(const function<void(AsyncArguments)> &, size_t bufferSize = 9216);
 			
 			bool send(shared_ptr<DataGram>);
+
+			asio::ip::udp::socket& getSocket();
 
 			void close();
 		protected:

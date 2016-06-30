@@ -3,11 +3,19 @@
 namespace ofxAsio {
 	namespace UDP {
 		//----------
+		// call used in Server
 		Socket::Socket()
 			: socket(this->ioService)
 			, work(this->ioService)
 		{
 			socket.open(asio::ip::udp::v4());
+
+			// Allow other processes to reuse the address, permitting other processes on 
+			// the same machine to use the multicast address. 
+			socket.set_option(asio::ip::udp::socket::reuse_address(true));
+			// do this before binding 
+			socket.set_option(asio::socket_base::broadcast(true));
+			cout << "server socket initialized" << endl;
 
 			this->asyncThread = thread([this]() {
 				this->ioService.run();
@@ -15,8 +23,29 @@ namespace ofxAsio {
 		}
 
 		//----------
+		// call used in Client
 		Socket::Socket(int port)
+			// exception handling in initializer list // http://stackoverflow.com/questions/697026/exception-handling-in-constructor-s-initializer-list
+			try
 			: socket(this->ioService, asio::ip::udp::endpoint(asio::ip::udp::v4(), port))
+			, work(this->ioService)
+		{
+			//constructor function body  
+			cout << "client socket initialized" << endl;
+			this->asyncThread = thread([this]() {
+				this->ioService.run();
+			});
+		}
+		//handles exceptions thrown from the ctor-initializer  
+		//and from the constructor functionbody  
+		catch (std::exception & e)
+		{
+			ofLogError() << "Failed to open Receiver on port " << port << " : " << e.what();
+		}
+
+		//----------
+		Socket::Socket(string ipAddress, int port)
+			: socket(this->ioService, asio::ip::udp::endpoint(asio::ip::address::from_string(ipAddress), port))
 			, work(this->ioService)
 		{
 			this->asyncThread = thread([this]() {
@@ -109,6 +138,11 @@ namespace ofxAsio {
 			else {
 				return true;
 			}
+		}
+
+		asio::ip::udp::socket & Socket::getSocket()
+		{
+			return this->socket;
 		}
 
 		//----------

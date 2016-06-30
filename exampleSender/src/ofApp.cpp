@@ -13,7 +13,7 @@ void ofApp::update(){
 		//make the DataGram
 		auto dataGram = make_shared<ofxAsio::UDP::DataGram>();
 
-		dataGram->setEndPoint(ofxAsio::UDP::EndPoint("127.0.0.1", 4444));		//--set where the message will be sent to
+		dataGram->setEndPoint(ofxAsio::UDP::EndPoint(MYIPADDRESS_1, MYPORT));		//--set where the message will be sent to
 
 		auto & message = dataGram->getMessage();
 		msg_str = "mouse x " + ofToString(ofGetMouseX()) + " mouse y " + ofToString(ofGetMouseY());

@@ -2,29 +2,33 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	ofSetWindowTitle("Receiver");
-
-	// When binding a server, we must use the server's constructor
-	// We use an empty pointer to represent that no server is bound.
-
-//	this->receiver = make_shared<ofxAsio::UDP::Socket>(MYIPADDRESS, MYPORT);
-	this->receiver = make_shared<ofxAsio::UDP::Socket>(MYPORT);
-
+	ofSetWindowTitle("Sender");
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 
-	//try to receive data
+	//send a DataGram (i.e. a message)
 	{
-		//receive a DataGram
-		auto dataGram = this->receiver->receive();
-		const auto & message = dataGram->getMessage();
-		msg_str = message.getMessageString();
-///		cout << message.getMessageString() << endl;
-///		cout << "Arrived from : " << dataGram->getEndPoint() << endl;
+		//make the DataGram
+		auto dataGram = make_shared<ofxAsio::UDP::DataGram>();
+
+//		dataGram->setEndPoint(ofxAsio::UDP::EndPoint(MYIPADDRESS_1, MYPORT));		
+
+		//enable broadcast
+		dataGram->setEndPoint(ofxAsio::UDP::EndPoint(MYIPADDRESS_3, MYPORT, true));		
+
+		auto & message = dataGram->getMessage();
+		msg_str = "mouse x " + ofToString(ofGetMouseX()) + " mouse y " + ofToString(ofGetMouseY());
+		message.set(msg_str); //--set the message content
+
+		//send the DataGram
+		this->sender.send(dataGram);
+
+		auto & m = dataGram->getMessage();
+///		cout << m.getMessageString() << endl;
+///		cout << "Sent to : " << dataGram->getEndPoint() << endl;
 	}
-	
 }
 
 //--------------------------------------------------------------
@@ -33,8 +37,8 @@ void ofApp::draw(){
 }
 
 //--------------------------------------------------------------
-void ofApp::exit() {
-//	receiver.reset();
+void ofApp::exit(){
+//	sender.close();
 }
 
 //--------------------------------------------------------------

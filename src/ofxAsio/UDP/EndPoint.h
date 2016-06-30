@@ -8,7 +8,7 @@ namespace ofxAsio {
 		public:
 			EndPoint();
 			EndPoint(asio::ip::udp::endpoint &);
-			EndPoint(string ipAddress, int port);
+			EndPoint(string ipAddress, int port, bool enable_broadcast = false);
 
 			asio::ip::udp::endpoint & getEndPoint();
 			const asio::ip::udp::endpoint & getEndPoint() const;
